@@ -6,5 +6,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         App.gameManager = this;
+        App.screenManager.Show<MenuScreen>();
     }
 }
