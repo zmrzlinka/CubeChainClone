@@ -6,7 +6,7 @@ public class MenuScreen : ScreenBase
 {
     public void StartGame()
     {
-        // TODO: start game
+        App.screenManager.Show<InGameScreen>();
         Hide();
     }
 }
