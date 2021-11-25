@@ -8,15 +8,15 @@ public class ScreenManager : MonoBehaviour
 
     void Awake()
     {
-        screens = GetComponentsInChildren<ScreenBase>(true);
         App.screenManager = this;
+        screens = GetComponentsInChildren<ScreenBase>(true);
     }
 
     public void Show<T>()
     {
-        foreach(ScreenBase screen in screens)
+        foreach (ScreenBase screen in screens)
         {
-            if(screen.GetType() == typeof(T))
+            if (screen.GetType() == typeof(T))
             {
                 screen.Show();
             }
@@ -25,9 +25,9 @@ public class ScreenManager : MonoBehaviour
 
     public void Hide<T>()
     {
-        foreach(ScreenBase screen in screens)
+        foreach (ScreenBase screen in screens)
         {
-            if(screen.GetType() == typeof(T))
+            if (screen.GetType() == typeof(T))
             {
                 screen.Hide();
             }
