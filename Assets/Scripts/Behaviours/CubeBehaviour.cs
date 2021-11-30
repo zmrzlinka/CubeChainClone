@@ -5,29 +5,40 @@ using UnityEngine;
 public class CubeBehaviour : MonoBehaviour
 {
 
+    public float startForce = 10f;
+
+    private bool isDragable;
     private float distToCamera;
+    private Rigidbody rb;
 
-    void Start()
+    private void Start()
     {
+        isDragable = true;
         distToCamera = Camera.main.WorldToScreenPoint(transform.position).z;
+        rb = GetComponent<Rigidbody>();
+        rb.isKinematic = true;
     }
 
-    void OnMouseDown()
+    private void OnMouseUp()
     {
-        Debug.Log("on mouse down");
+        if(isDragable)
+        {
+            isDragable = false;
+            rb.isKinematic = false;
+            rb.AddForce(Vector3.forward * startForce, ForceMode.Impulse);
+            App.gameManager.StartSpawnCubeCoroutine();
+        }
     }
 
-    void OnMouseUp()
+    private void OnMouseDrag()
     {
-        Debug.Log("on mouse up");
-    }
+        if(isDragable)
+        {
+            Vector3 mousePositionWithDepth = Input.mousePosition;
+            mousePositionWithDepth.z = distToCamera;
 
-    void OnMouseDrag()
-    {
-        Vector3 mousePositionWithDepth = Input.mousePosition;
-        mousePositionWithDepth.z = distToCamera;
-
-        Vector3 mousePosInWorld = Camera.main.ScreenToWorldPoint(mousePositionWithDepth);
-        transform.position = new Vector3(Mathf.Clamp(mousePosInWorld.x, -2.5f, 2.5f), transform.position.y, transform.position.z);
+            Vector3 mousePosInWorld = Camera.main.ScreenToWorldPoint(mousePositionWithDepth);
+            transform.position = new Vector3(Mathf.Clamp(mousePosInWorld.x, -2.5f, 2.5f), transform.position.y, transform.position.z);
+        }
     }
 }

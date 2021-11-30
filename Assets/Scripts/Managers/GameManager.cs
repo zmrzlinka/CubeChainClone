@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -5,6 +6,8 @@ public class GameManager : MonoBehaviour
 
     public CubeBehaviour cubePrefab;
     public Transform spawnPosition;
+
+    private WaitForSeconds wait = new WaitForSeconds(0.5f);
 
     void Start()
     {
@@ -21,5 +24,16 @@ public class GameManager : MonoBehaviour
     public void SpawnCube()
     {
         Instantiate(cubePrefab, spawnPosition.position, Quaternion.identity);
+    }
+
+    public void StartSpawnCubeCoroutine()
+    {
+        StartCoroutine(SpawnNextCube());
+    }
+
+    private IEnumerator SpawnNextCube()
+    {
+        yield return wait;
+        SpawnCube();
     }
 }
