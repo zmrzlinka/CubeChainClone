@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Models;
 using UnityEngine;
 
 public class CubeBehaviour : MonoBehaviour
@@ -11,12 +12,24 @@ public class CubeBehaviour : MonoBehaviour
     private float distToCamera;
     private Rigidbody rb;
 
+    private CubeModel model;
+    private CubeText[] cubeTexts;
+
     private void Start()
     {
         isDragable = true;
         distToCamera = Camera.main.WorldToScreenPoint(transform.position).z;
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = true;
+    }
+    public void Init(CubeModel model)
+    {
+        this.cubeTexts = GetComponentsInChildren<CubeText>();
+        this.model = model;
+        foreach (var text in cubeTexts)
+        {
+            text.UpdateText(this.model.Value);
+        }
     }
     private void OnEnable()
     {
