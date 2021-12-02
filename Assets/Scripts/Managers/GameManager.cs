@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Models;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,7 +32,9 @@ public class GameManager : MonoBehaviour
 
     public void SpawnCube()
     {
+        CubeModel model = new CubeModel(2);
         Instantiate(cubePrefab, spawnPosition.position, Quaternion.identity);
+        cubePrefab.Init(model);
     }
 
     public void StartSpawnCubeCoroutine()
