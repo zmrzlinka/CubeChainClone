@@ -159,6 +159,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cubePrefab: {fileID: 5777442610237411722, guid: d186381b393dbf61c9bc8dcfcd38c0f0, type: 3}
   spawnPosition: {fileID: 1758366962}
+  OnLevelCleared:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1004292713
 Transform:
   m_ObjectHideFlags: 0

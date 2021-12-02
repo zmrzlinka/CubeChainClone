@@ -18,10 +18,21 @@ public class CubeBehaviour : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = true;
     }
-
+    private void OnEnable()
+    {
+        App.gameManager.OnLevelCleared.AddListener(OnLevelCleared);
+    }
+    private void OnDisable()
+    {
+        App.gameManager.OnLevelCleared.RemoveListener(OnLevelCleared);
+    }
+    private void OnLevelCleared()
+    {
+        Destroy(this.gameObject);
+    }
     private void OnMouseUp()
     {
-        if(isDragable)
+        if (isDragable)
         {
             isDragable = false;
             rb.isKinematic = false;
@@ -32,7 +43,7 @@ public class CubeBehaviour : MonoBehaviour
 
     private void OnMouseDrag()
     {
-        if(isDragable)
+        if (isDragable)
         {
             Vector3 mousePositionWithDepth = Input.mousePosition;
             mousePositionWithDepth.z = distToCamera;
@@ -41,4 +52,5 @@ public class CubeBehaviour : MonoBehaviour
             transform.position = new Vector3(Mathf.Clamp(mousePosInWorld.x, -2.5f, 2.5f), transform.position.y, transform.position.z);
         }
     }
+
 }

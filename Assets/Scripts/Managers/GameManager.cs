@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class GameManager : MonoBehaviour
     public Transform spawnPosition;
 
     private WaitForSeconds wait = new WaitForSeconds(0.5f);
+
+    public UnityEvent OnLevelCleared = new UnityEvent();
 
     void Start()
     {
@@ -19,6 +22,11 @@ public class GameManager : MonoBehaviour
     {
         App.screenManager.Show<InGameScreen>();
         SpawnCube();
+    }
+    public void EndGame()
+    {
+        App.screenManager.Show<MenuScreen>();
+        OnLevelCleared.Invoke();
     }
 
     public void SpawnCube()
