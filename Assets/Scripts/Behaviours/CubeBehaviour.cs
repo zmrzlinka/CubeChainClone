@@ -91,6 +91,15 @@ public class CubeBehaviour : MonoBehaviour
         }
     }
 
+    void OnTriggerExit(Collider other)
+    {
+        if(other.gameObject.CompareTag("GameArea"))
+        {
+            Debug.Log("game over");     // TODO: add colliders to side walls
+            // TODO: handle game over
+        }
+    }
+
     public void AddForce(Vector3 normalizedForce)
     {
         rb.AddForce(normalizedForce * jumpForce, ForceMode.Impulse);
