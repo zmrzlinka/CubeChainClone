@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 
     public CubeBehaviour cubePrefab;
     public Transform spawnPosition;
+    public CubeConfig cubeConfig;
 
     private WaitForSeconds wait = new WaitForSeconds(0.5f);
 
@@ -15,13 +16,14 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         App.gameManager = this;
+        App.collisionManager = new CollisionManager();
         App.screenManager.Show<MenuScreen>();
     }
 
     public void StartGame()
     {
         App.screenManager.Show<InGameScreen>();
-        SpawnCube();
+        SpawnCube(2, spawnPosition.position);
     }
     public void EndGame()
     {
@@ -29,11 +31,12 @@ public class GameManager : MonoBehaviour
         OnLevelCleared.Invoke();
     }
 
-    public void SpawnCube()
+    public CubeBehaviour SpawnCube(int value, Vector3 position)
     {
-        CubeModel model = new CubeModel(2); // TODO: Random starting value
-        CubeBehaviour cube = Instantiate(cubePrefab, spawnPosition.position, Quaternion.identity);
-        cube.Init(model);
+        CubeModel model = new CubeModel(value);
+        CubeBehaviour cube = Instantiate(cubePrefab, position, Quaternion.identity);
+        cube.Init(model, cubeConfig.GetColor(model.Value));
+        return cube;
     }
 
     public void StartSpawnCubeCoroutine()
@@ -44,6 +47,6 @@ public class GameManager : MonoBehaviour
     private IEnumerator SpawnNextCube()
     {
         yield return wait;
-        SpawnCube();
+        SpawnCube(2, spawnPosition.position);  // TODO: Random starting value
     }
 }

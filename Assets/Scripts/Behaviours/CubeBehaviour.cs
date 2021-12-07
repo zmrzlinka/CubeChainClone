@@ -7,22 +7,24 @@ public class CubeBehaviour : MonoBehaviour
 {
 
     public float startForce = 10f;
+    public float jumpForce = 10f;
 
     private bool isDragable;
     private float distToCamera;
     private Rigidbody rb;
+    private Material mat;
 
     private CubeModel model;
     private CubeText[] cubeTexts;
 
-    private void Start()
+    private void Awake()
     {
         isDragable = true;
         distToCamera = Camera.main.WorldToScreenPoint(transform.position).z;
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = true;
     }
-    public void Init(CubeModel model)
+    public void Init(CubeModel model, Color color)
     {
         this.cubeTexts = GetComponentsInChildren<CubeText>();
         this.model = model;
@@ -30,25 +32,31 @@ public class CubeBehaviour : MonoBehaviour
         {
             text.UpdateText(this.model.Value);
         }
+        mat = GetComponent<Renderer>().material;
+        mat.SetColor("_Color", color);  // TODO: set color according to the value
     }
     private void OnEnable()
     {
-        App.gameManager.OnLevelCleared.AddListener(OnLevelCleared);
+        App.gameManager.OnLevelCleared.AddListener(DestroyCube);
     }
     private void OnDisable()
     {
-        App.gameManager.OnLevelCleared.RemoveListener(OnLevelCleared);
+        App.gameManager.OnLevelCleared.RemoveListener(DestroyCube);
     }
-    private void OnLevelCleared()
+    public void DestroyCube()
     {
         Destroy(this.gameObject);
+    }
+    public void DisableKinematic()
+    {
+        isDragable = false;
+        rb.isKinematic = false;
     }
     private void OnMouseUp()
     {
         if (isDragable)
         {
-            isDragable = false;
-            rb.isKinematic = false;
+            DisableKinematic();
             rb.AddForce(Vector3.forward * startForce, ForceMode.Impulse);
             App.gameManager.StartSpawnCubeCoroutine();
         }
@@ -66,4 +74,25 @@ public class CubeBehaviour : MonoBehaviour
         }
     }
 
+    public int GetValue()
+    {
+        return model.Value;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Cube"))
+        {
+            CubeBehaviour second = collision.gameObject.GetComponent<CubeBehaviour>();
+            if(second.GetValue() == GetValue())
+            {
+                App.collisionManager.AddCollision(this, second);
+            }
+        }
+    }
+
+    public void AddForce(Vector3 normalizedForce)
+    {
+        rb.AddForce(normalizedForce * jumpForce, ForceMode.Impulse);
+    }
 }
