@@ -13,6 +13,9 @@ public class CollisionManager
                 collisions[second] == first)
         {
             int newValue = first.GetValue() * 2;
+
+            App.gameManager.AddScore(newValue);
+
             CubeBehaviour cube = App.gameManager.SpawnCube(newValue, Vector3.Lerp(first.transform.position, second.transform.position, 0.5f));
             cube.DisableKinematic();
             cube.AddForce(new Vector3(Random.Range(-0.1f, 0.1f), 1, Random.Range(-0.1f, 0.1f)).normalized);     // TODO: fire cubes in direction with cubes with same value

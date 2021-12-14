@@ -5,6 +5,8 @@ using UnityEngine.Events;
 public class GameManager : MonoBehaviour
 {
 
+    public static int Score { get; internal set; } = 0;
+
     public CubeBehaviour cubePrefab;
     public Transform spawnPosition;
     public CubeConfig cubeConfig;
@@ -12,6 +14,19 @@ public class GameManager : MonoBehaviour
     private WaitForSeconds wait = new WaitForSeconds(0.5f);
 
     public UnityEvent OnLevelCleared = new UnityEvent();
+
+    public void AddScore(int scoreToAdd)
+    {
+        Score += scoreToAdd;
+        //TODO: pÌsaù skÛre niekam na obrazovku v InGameScreene
+        Debug.Log($"Actual score is: {Score}");
+    }
+
+    public void ResetScore()
+    {
+        Score = 0;
+        Debug.Log("Score set to zero.");
+    }
 
     void Start()
     {
@@ -22,11 +37,21 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        ResetScore();
         App.screenManager.Show<InGameScreen>();
         SpawnCube(2, spawnPosition.position);
     }
+
+    public void RestartGame()
+    {
+        ResetScore();
+        OnLevelCleared.Invoke();
+        StartGame();
+    }
+
     public void EndGame()
     {
+        ResetScore();
         App.screenManager.Show<MenuScreen>();
         OnLevelCleared.Invoke();
     }

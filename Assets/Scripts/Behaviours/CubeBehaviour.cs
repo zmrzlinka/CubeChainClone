@@ -9,7 +9,25 @@ public class CubeBehaviour : MonoBehaviour
     public float startForce = 10f;
     public float jumpForce = 10f;
 
-    private bool isDragable;
+    public double cubeTimeToLeaveSpawnInSeconds = 2d;
+
+    private double releaseCubeTime = double.NegativeInfinity;
+    private double releasedCubeTimeDeadline = double.NegativeInfinity;
+    private double releasedCubeTimeLeftSpawn = double.NegativeInfinity;
+
+    private bool _isDragable = true;
+    
+    private bool isDragable { 
+        set
+        {
+            _isDragable = value;
+        }
+        get
+        {
+            return _isDragable && App.screenManager.IsScreenDisplayed<InGameScreen>();
+        }
+    }
+
     private float distToCamera;
     private Rigidbody rb;
     private Material mat;
@@ -24,6 +42,19 @@ public class CubeBehaviour : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = true;
     }
+    private void Update()
+    {
+        if (isDragable == false)
+        {
+            if (Time.unscaledTimeAsDouble > releasedCubeTimeDeadline && releasedCubeTimeLeftSpawn < releaseCubeTime)
+            {
+                GameOver();
+                Debug.Log("game over due to time");
+            }
+                
+        }
+    }
+
     public void Init(CubeModel model, Color color)
     {
         this.cubeTexts = GetComponentsInChildren<CubeText>();
@@ -56,6 +87,9 @@ public class CubeBehaviour : MonoBehaviour
     {
         if (isDragable)
         {
+            releaseCubeTime = Time.unscaledTimeAsDouble;
+            releasedCubeTimeDeadline = releaseCubeTime + cubeTimeToLeaveSpawnInSeconds;
+            
             DisableKinematic();
             rb.AddForce(Vector3.forward * startForce, ForceMode.Impulse);
             App.gameManager.StartSpawnCubeCoroutine();
@@ -89,6 +123,31 @@ public class CubeBehaviour : MonoBehaviour
                 App.collisionManager.AddCollision(this, second);
             }
         }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if(other.gameObject.CompareTag("GameArea"))
+        {
+            Debug.Log("game over");     // TODO: add colliders to side walls
+            GameOver();
+        }
+
+        if (other.gameObject.CompareTag("CubeSpawnArea"))
+        {
+            if (rb.isKinematic == false)
+            {
+                releasedCubeTimeLeftSpawn = Time.unscaledTimeAsDouble;
+                Debug.Log("on cube spawn trigger exit");
+            }
+            
+        }
+    }
+
+    public void GameOver()
+    {
+        App.screenManager.Show<GameOverScreen>();
+        App.screenManager.Hide<InGameScreen>();
     }
 
     public void AddForce(Vector3 normalizedForce)
