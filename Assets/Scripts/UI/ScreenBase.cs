@@ -10,6 +10,11 @@ public class ScreenBase : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    public virtual void Show(Dictionary<string, object> param)
+    {
+        gameObject.SetActive(true);
+    }
+
     // TODO (maybe): add Show method with parameter(s)
 
     public virtual void Hide()

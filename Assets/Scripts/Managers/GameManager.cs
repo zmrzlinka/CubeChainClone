@@ -1,59 +1,57 @@
 using System.Collections;
+using System.Collections.Generic;
 using Models;
 using UnityEngine;
 using UnityEngine.Events;
 public class GameManager : MonoBehaviour
 {
 
-    public static int Score { get; internal set; } = 0;
-
     public CubeBehaviour cubePrefab;
     public Transform spawnPosition;
     public CubeConfig cubeConfig;
+    public PlayerModel playerModel;
 
     private WaitForSeconds wait = new WaitForSeconds(0.5f);
 
     public UnityEvent OnLevelCleared = new UnityEvent();
 
-    public void AddScore(int scoreToAdd)
-    {
-        Score += scoreToAdd;
-        //TODO: pÌsaù skÛre niekam na obrazovku v InGameScreene
-        Debug.Log($"Actual score is: {Score}");
-    }
-
-    public void ResetScore()
-    {
-        Score = 0;
-        Debug.Log("Score set to zero.");
-    }
 
     void Start()
     {
         App.gameManager = this;
         App.collisionManager = new CollisionManager();
+        playerModel = new PlayerModel();
         App.screenManager.Show<MenuScreen>();
     }
 
     public void StartGame()
     {
-        ResetScore();
+        playerModel.ResetScore();
         App.screenManager.Show<InGameScreen>();
         SpawnCube(2, spawnPosition.position);
     }
 
     public void RestartGame()
     {
-        ResetScore();
         OnLevelCleared.Invoke();
         StartGame();
     }
 
     public void EndGame()
     {
-        ResetScore();
         App.screenManager.Show<MenuScreen>();
         OnLevelCleared.Invoke();
+    }
+
+    public void GameOver()
+    {
+        bool newHighScore = playerModel.CheckHighScore();
+        Dictionary<string, object> param = new Dictionary<string, object>
+        {
+            {"newHighScore", newHighScore}
+        };
+        App.screenManager.Show<GameOverScreen>(param);
+        App.screenManager.Hide<InGameScreen>();
     }
 
     public CubeBehaviour SpawnCube(int value, Vector3 position)

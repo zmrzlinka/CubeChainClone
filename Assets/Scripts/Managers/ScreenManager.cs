@@ -35,6 +35,17 @@ public class ScreenManager : MonoBehaviour
         }
     }
 
+    public void Show<T>(Dictionary<string, object> param)
+    {
+        foreach (ScreenBase screen in screens)
+        {
+            if (screen.GetType() == typeof(T))
+            {
+                screen.Show(param);
+            }
+        }
+    }
+
     public void Hide<T>()
     {
         foreach (ScreenBase screen in screens)

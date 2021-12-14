@@ -14,7 +14,7 @@ public class CollisionManager
         {
             int newValue = first.GetValue() * 2;
 
-            App.gameManager.AddScore(newValue);
+            App.gameManager.playerModel.AddScore(newValue);
 
             CubeBehaviour cube = App.gameManager.SpawnCube(newValue, Vector3.Lerp(first.transform.position, second.transform.position, 0.5f));
             cube.DisableKinematic();
