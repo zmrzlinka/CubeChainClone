@@ -12,6 +12,18 @@ public class ScreenManager : MonoBehaviour
         screens = GetComponentsInChildren<ScreenBase>(true);
     }
 
+    public bool IsScreenDisplayed<T>()
+    {
+        foreach (ScreenBase screen in screens)
+        {
+            if (screen.GetType() == typeof(T))
+            {
+                return screen.gameObject.activeInHierarchy;
+            }
+        }
+        return false;
+    }
+
     public void Show<T>()
     {
         foreach (ScreenBase screen in screens)
