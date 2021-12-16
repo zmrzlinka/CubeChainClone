@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Models;
 using UnityEngine;
 
@@ -17,7 +18,8 @@ public class CubeBehaviour : MonoBehaviour
 
     private bool _isDragable = true;
 
-    private bool isDragable {
+    private bool isDragable
+    {
         set
         {
             _isDragable = value;
@@ -29,11 +31,13 @@ public class CubeBehaviour : MonoBehaviour
     }
 
     private float distToCamera;
-    private Rigidbody rb;
+    internal Rigidbody rb;
     private Material mat;
 
     private CubeModel model;
     private CubeText[] cubeTexts;
+
+    [SerializeField] private ParticleSystem spawnParticles;
 
     private void Awake()
     {
@@ -53,7 +57,7 @@ public class CubeBehaviour : MonoBehaviour
         }
     }
 
-    public void Init(CubeModel model, Color color)
+    public void Init(CubeModel model, Color color, bool showParticles)
     {
         this.cubeTexts = GetComponentsInChildren<CubeText>();
         this.model = model;
@@ -63,6 +67,12 @@ public class CubeBehaviour : MonoBehaviour
         }
         mat = GetComponent<Renderer>().material;
         mat.SetColor("_Color", color);  // TODO: set color according to the value
+        if (showParticles)
+        {
+            var particles = spawnParticles.main;
+            particles.startColor = color;
+            spawnParticles.Play();
+        }
     }
     private void OnEnable()
     {
@@ -74,6 +84,8 @@ public class CubeBehaviour : MonoBehaviour
     }
     public void DestroyCube()
     {
+        DOTween.Kill(rb);
+        App.gameManager.cubes[model.Value].Remove(this);
         Destroy(this.gameObject);
     }
     public void DisableKinematic()
@@ -113,10 +125,10 @@ public class CubeBehaviour : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Cube"))
+        if (collision.gameObject.CompareTag("Cube"))
         {
             CubeBehaviour second = collision.gameObject.GetComponent<CubeBehaviour>();
-            if(second.GetValue() == GetValue())
+            if (second.GetValue() == GetValue())
             {
                 App.collisionManager.AddCollision(this, second);
             }
@@ -125,7 +137,7 @@ public class CubeBehaviour : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        if(other.gameObject.CompareTag("GameArea"))
+        if (other.gameObject.CompareTag("GameArea"))
         {
             App.gameManager.GameOver();
         }
@@ -142,5 +154,31 @@ public class CubeBehaviour : MonoBehaviour
     public void AddForce(Vector3 normalizedForce)
     {
         rb.AddForce(normalizedForce * jumpForce, ForceMode.Impulse);
+    }
+    public void JumpToTheClosestCube()
+    {
+        CubeBehaviour closestCube = null;
+        float closestDistance = Mathf.Infinity;
+        List<CubeBehaviour> cubes = App.gameManager.cubes[model.Value];
+        foreach (CubeBehaviour cube in cubes)
+        {
+            if (cube != this)
+            {
+                Vector3 distance = cube.transform.position - transform.position;
+                if (distance.magnitude < closestDistance)
+                {
+                    closestDistance = distance.magnitude;
+                    closestCube = cube;
+                }
+            }
+        }
+        if (closestCube == null)
+        {
+            AddForce(new Vector3(Random.Range(-0.1f, 0.1f), 1, Random.Range(-0.1f, 0.1f)).normalized);
+        }
+        else
+        {
+            rb.DOJump(closestCube.transform.position, 3, 1, 2);
+        }
     }
 }

@@ -207,6 +207,7 @@ MonoBehaviour:
   OnLevelCleared:
     m_PersistentCalls:
       m_Calls: []
+  testJump: {fileID: 0}
 --- !u!4 &1004292713
 Transform:
   m_ObjectHideFlags: 0

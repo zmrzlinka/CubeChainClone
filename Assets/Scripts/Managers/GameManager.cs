@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
 
     public UnityEvent OnLevelCleared = new UnityEvent();
 
-
+    public Dictionary<int, List<CubeBehaviour>> cubes = new Dictionary<int, List<CubeBehaviour>>();
     void Start()
     {
         App.gameManager = this;
@@ -54,11 +54,16 @@ public class GameManager : MonoBehaviour
         App.screenManager.Hide<InGameScreen>();
     }
 
-    public CubeBehaviour SpawnCube(int value, Vector3 position)
+    public CubeBehaviour SpawnCube(int value, Vector3 position, bool showParticles = false)
     {
         CubeModel model = new CubeModel(value);
         CubeBehaviour cube = Instantiate(cubePrefab, position, Quaternion.identity);
-        cube.Init(model, cubeConfig.GetColor(model.Value));
+        cube.Init(model, cubeConfig.GetColor(model.Value), showParticles);
+        if (!cubes.ContainsKey(model.Value))
+        {
+            cubes.Add(model.Value, new List<CubeBehaviour>());
+        }
+        cubes[model.Value].Add(cube);
         return cube;
     }
 
@@ -70,6 +75,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator SpawnNextCube()
     {
         yield return wait;
-        SpawnCube(2, spawnPosition.position);  // TODO: Random starting value
+        // TODO: Random starting value
+        SpawnCube(2, spawnPosition.position);
     }
 }
